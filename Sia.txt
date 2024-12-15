@@ -1,0 +1,138 @@
+# From your project directory
+docker-compose -f docker-compose-development.yml up -d
+
+# Then start the frontend
+cd frontend
+pnpm dev
+
+
+You don't need to rebuild everything unless you've made changes to:
+
+Backend code
+Environment variables (.env)
+Dependencies
+
+If you did make such changes, then use:
+bashCopydocker-compose -f docker-compose-development.yml up -d --build
+
+read the @/Sia.txt to underestand the project. time to customize and clean BCG Agentkit based on our needs. get ready to start with removing/cleaning the parts that we don't need. then we can start with our plan and customizing:
+1- add other LLM models to handle all the major providers
+2- add the bigquery connection to the agitkit as the main database knowledge that later can be used to query the GA database using SQL and agentic workflow
+
+Project:
+GA4 Analytics Agent PoC Development Plan
+
+Project Overview
+Development of a Proof of Concept for an AI-powered analytics agent that enables natural language querying of Google Analytics 4 (GA4) data using BCG AgentKit framework.
+Goals & Objectives
+	1. Create a functional agent capable of: 
+		○ Processing natural language queries about GA4 data
+		○ Generating accurate SQL queries for BigQuery
+		○ Providing meaningful analytics insights
+	2. Validate the technical feasibility of the solution
+	3. Establish foundation for future production development
+Technical Architecture
+Core Components
+	1. Data Layer 
+		○ Source: GA4 BigQuery Export
+		○ Storage: BigQuery (existing)
+		○ Access: SQL query interface
+	2. Intelligence Layer 
+		○ Framework: BCG AgentKit
+		○ LLM: OpenAI/Anthropic API
+		○ Query Processing: Custom SQL generation tools
+	3. Interface Layer 
+		○ Query Input: Natural language
+		○ Response: Formatted analytics insights
+		○ Context: Session-based management
+Implementation Plan
+Phase 1: Core Setup (1-2 weeks)
+	1. Environment Setup 
+		○ AgentKit configuration
+		○ LLM API integration
+		○ BigQuery connection setup
+	2. Basic Tools Development 
+		○ SQL query builder
+		○ Response formatter
+		○ Error handler
+Phase 2: Intelligence Layer (2-3 weeks)
+	1. Query Processing 
+		○ GA4 schema mapping
+		○ Query pattern recognition
+		○ Context management system
+	2. Response Generation 
+		○ Data interpretation
+		○ Insight generation
+		○ Format standardization
+Phase 3: Testing & Refinement (1-2 weeks)
+	1. Validation 
+		○ Unit testing
+		○ Integration testing
+		○ Performance benchmarking
+	2. Documentation 
+		○ Technical documentation
+		○ Usage guidelines
+		○ Future recommendations
+
+Refined GA4 Analytics Agent Architecture
+Core Components
+1. Supervisor Agent
+
+Manages high-level query understanding
+Orchestrates task distribution
+Handles final response compilation
+
+2. Specialized Agents
+a) Query Agent
+
+Parses natural language input
+Identifies analytics intent
+Maps to GA4 schema concepts
+
+b) Analytics Agent
+
+Handles metric calculations
+Manages time-based comparisons
+Performs trend analysis
+
+c) Report Agent
+
+Formats data presentation
+Generates insights
+Structures responses
+
+3. Analyst Modules
+a) Performance Analyst
+
+Traffic analysis
+Engagement metrics
+Conversion tracking
+
+b) Statistical Analyst
+
+Trend detection
+Anomaly identification
+Comparative analysis
+
+4. Tool Layer
+a) Query Tools
+
+SQL generation
+BigQuery connector
+Schema validator
+
+b) Processing Tools
+
+Data transformation
+Metric calculation
+Time series handling
+
+Data Flow
+
+User Query → Supervisor Agent
+Supervisor → Query Agent (understanding)
+Query Agent → Analytics Agent (processing)
+Analytics Agent → Relevant Analysts
+Analysts → Report Agent
+Report Agent → Supervisor → User
+
