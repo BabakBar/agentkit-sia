@@ -122,6 +122,7 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
+Sia.txt
 
 # mkdocs documentation
 /site
