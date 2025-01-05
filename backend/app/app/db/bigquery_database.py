@@ -120,22 +120,29 @@ class BigQueryDatabase:
         page_size: int = 1000,
         max_pages: Optional[int] = None
     ):
-        """Execute a query with pagination."""
-        query_job = self.client.query(query)
-        page_token = None
-        page_count = 0
+        """Execute a query with pagination using row-by-row iteration."""
+        # Execute query
+        future = self._pool.submit(self._execute_query_sync, query, None)
+        result_iterator = await asyncio.wrap_future(future)
         
-        while True:
-            page = query_job.result(
-                page_size=page_size,
-                page_token=page_token
-            )
-            yield [dict(row.items()) for row in page]
+        page_count = 0
+        current_page = []
+        
+        # Iterate through results and build pages
+        for row in result_iterator:
+            current_page.append(dict(row.items()))
             
-            page_token = page.next_page_token
-            if not page_token or (max_pages and page_count >= max_pages):
-                break
-            page_count += 1
+            if len(current_page) >= page_size:
+                yield current_page
+                current_page = []
+                page_count += 1
+                
+                if max_pages and page_count >= max_pages:
+                    break
+        
+        # Yield any remaining rows in the last page
+        if current_page:
+            yield current_page
     
     def close(self):
         """Clean up resources."""

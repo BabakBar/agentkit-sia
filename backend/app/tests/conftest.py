@@ -2,6 +2,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from app.db.bigquery_database import BigQueryDatabase
 from fastapi.testclient import TestClient
 from fastapi_cache import FastAPICache
 from langchain.agents import AgentExecutor
@@ -32,6 +33,12 @@ def pytest_configure():
     # Set required environment variables for tests
     import os
     os.environ.update({
+        "TESTING": "true",
+        "BIGQUERY_ENABLED": "true",
+        "BIGQUERY_PROJECT_ID": "orixa-438316",
+        "BIGQUERY_DATASET": "analytics_386787868",
+        "BIGQUERY_CREDENTIALS_PATH": "/credentials/orixa-438316-371bcdc57d23.json",
+        "BIGQUERY_MAX_BYTES_PROCESSED": "1000000000",
         "PROJECT_NAME": "test",
         "OPENAI_API_KEY": "test",
         "DATABASE_USER": "postgres",
@@ -127,3 +134,36 @@ def test_client(meta_agent: AgentExecutor) -> TestClient:  # pylint: disable=red
 @pytest.fixture
 def run_manager() -> AsyncCallbackManagerForToolRun:
     return MagicMock(spec=AsyncCallbackManagerForToolRun)
+
+
+# Integration test fixtures
+@pytest.fixture(scope="session")
+def real_db():
+    """Create test database instance with real credentials."""
+    from app.core.config import Settings
+    
+    # Create test settings with BigQuery enabled
+    test_settings = Settings(
+        BIGQUERY_ENABLED=True,
+        BIGQUERY_PROJECT_ID="orixa-438316",
+        BIGQUERY_DATASET="analytics_386787868",
+            BIGQUERY_CREDENTIALS_PATH="/credentials/orixa-438316-371bcdc57d23.json",
+        BIGQUERY_MAX_BYTES_PROCESSED=1000000000
+    )
+    
+    # Create database instance with test settings
+    with patch("app.db.bigquery_database.settings", test_settings):
+        db = BigQueryDatabase()
+        return db
+
+
+@pytest.fixture(scope="session")
+def test_data_config():
+    """Configuration for test data parameters."""
+    return {
+        "start_date": "20250103",  # Match sample data date
+        "end_date": "20250103",    # Match sample data date
+        "test_timeout": 30,  # seconds
+        "max_pages": 3,
+        "page_size": 100
+    }
