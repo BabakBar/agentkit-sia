@@ -3,7 +3,10 @@ version: '3.8'
 services:
   fastapi_server:
     container_name: fastapi_server
-    build: ./backend
+    build:
+      context: ./backend
+      args:
+        INSTALL_DEV: "true"
     restart: always
     # Enable debug mode run .vscode/launch.json -> "Debug: Attach to FastAPI Docker"
     # command: "sh -c 'pip install debugpy -t /tmp && alembic upgrade head && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 9090 --loop asyncio'"
@@ -13,6 +16,7 @@ services:
     command: "sh -c 'alembic upgrade head && python app/document_ingestion.py && uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 9090'"
     volumes:
       - ./backend/app:/code
+      - ./credentials:/credentials
     expose:
       - 9090
     env_file: ".env"
