@@ -46,13 +46,23 @@ class IResponsePage(
     def create(
         cls,
         items: Sequence[T],
-        total: int,
         params: AbstractParams,
-    ) -> PageBase[T] | None:
-        if params.size is not None and total is not None and params.size != 0:
-            pages = ceil(total / params.size)
-        else:
-            pages = 0
+        **kwargs: Any,
+    ) -> "IResponsePage[T]":
+        """Create a response page.
+        
+        Args:
+            items: Sequence of items to include in the page
+            params: Pagination parameters
+            **kwargs: Additional keyword arguments
+                - total: Total number of items
+                - unique: Whether the items should be unique (default: True)
+        
+        Returns:
+            IResponsePage instance with pagination data
+        """
+        total = kwargs.get("total", len(items))
+        pages = ceil(total / params.size) if params.size and params.size != 0 else 0
 
         return cls(
             data=PageBase(
