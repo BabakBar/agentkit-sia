@@ -8,6 +8,8 @@ from typing import Optional
 import tiktoken
 from langchain.base_language import BaseLanguageModel
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.core.config import settings
 from app.schemas.tool_schema import LLMType
@@ -27,44 +29,59 @@ def get_token_length(
 
 def get_llm(
     llm: LLMType,
-    api_key: Optional[str] = settings.OPENAI_API_KEY,
+    api_key: Optional[str] = None,
 ) -> BaseLanguageModel:
     """Get the LLM instance for the given LLM type."""
-    match llm:
-        case "azure-3.5":
-            if settings.OPENAI_API_BASE is None:
-                raise ValueError("OPENAI_API_BASE must be set to use Azure LLM")
-            return AzureChatOpenAI(
-                openai_api_base=settings.OPENAI_API_BASE,
-                openai_api_version="2023-03-15-preview",
-                deployment_name="rnd-gpt-35-turbo",
-                openai_api_key=api_key if api_key is not None else settings.OPENAI_API_KEY,
-                openai_api_type="azure",
-                streaming=True,
-            )
-        case "gpt-3.5-turbo":
-            return ChatOpenAI(
-                temperature=0,
-                model_name="gpt-3.5-turbo",
-                openai_organization=settings.OPENAI_ORGANIZATION,
-                openai_api_key=api_key if api_key is not None else settings.OPENAI_API_KEY,
-                streaming=True,
-            )
-        case "gpt-4":
-            return ChatOpenAI(
-                temperature=0,
-                model_name="gpt-4",
-                openai_organization=settings.OPENAI_ORGANIZATION,
-                openai_api_key=api_key if api_key is not None else settings.OPENAI_API_KEY,
-                streaming=True,
-            )
-        # If an exact match is not confirmed, this last case will be used if provided
-        case _:
-            logger.warning(f"LLM {llm} not found, using default LLM")
-            return ChatOpenAI(
-                temperature=0,
-                model_name="gpt-4",
-                openai_organization=settings.OPENAI_ORGANIZATION,
-                openai_api_key=settings.OPENAI_API_KEY,
-                streaming=True,
-            )
+    # OpenAI Models
+    if llm in ["gpt-4o", "gpt-4o-2024-08-06", "gpt-4o-mini", "gpt-4o-mini-2024-07-18"]:
+        return ChatOpenAI(
+            temperature=0,
+            model_name=llm,
+            openai_organization=settings.OPENAI_ORGANIZATION,
+            openai_api_key=api_key if api_key is not None else settings.OPENAI_API_KEY,
+            streaming=True,
+        )
+    
+    # Anthropic Models
+    elif llm == "claude-3-5-sonnet-latest":
+        return ChatAnthropic(
+            model_name=llm,
+            temperature=0,
+            anthropic_api_key=api_key if api_key is not None else settings.ANTHROPIC_API_KEY,
+            base_url=settings.ANTHROPIC_BASE_URL,
+            streaming=True,
+        )
+    
+    # Google Models
+    elif llm == "gemini-2.0-flash-exp":
+        return ChatGoogleGenerativeAI(
+            model=f"models/{llm}",  # Gemini requires full model path
+            temperature=0,
+            google_api_key=api_key if api_key is not None else settings.GOOGLE_API_KEY,
+            convert_system_message_to_human=True,  # Required for proper message handling
+            stream=True,  # Gemini uses 'stream' instead of 'streaming'
+        )
+    
+    # Azure OpenAI (if needed)
+    elif llm == "azure-3.5":
+        if settings.OPENAI_API_BASE is None:
+            raise ValueError("OPENAI_API_BASE must be set to use Azure LLM")
+        return AzureChatOpenAI(
+            openai_api_base=settings.OPENAI_API_BASE,
+            openai_api_version="2023-03-15-preview",
+            deployment_name="rnd-gpt-35-turbo",
+            openai_api_key=api_key if api_key is not None else settings.OPENAI_API_KEY,
+            openai_api_type="azure",
+            streaming=True,
+        )
+    
+    # Default/Fallback
+    else:
+        logger.warning(f"LLM {llm} not found, using default LLM")
+        return ChatOpenAI(
+            temperature=0,
+            model_name="gpt-4o",
+            openai_organization=settings.OPENAI_ORGANIZATION,
+            openai_api_key=settings.OPENAI_API_KEY,
+            streaming=True,
+        )

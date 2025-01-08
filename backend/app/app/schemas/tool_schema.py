@@ -3,22 +3,35 @@ from typing import Any, List, Literal, Optional, Union
 
 from box import Box
 from langchain.schema import AIMessage, HumanMessage
-from pydantic.v1 import BaseModel  # TODO: Remove this line when langchain upgrades to pydantic v2
+from pydantic.v1 import BaseModel  # Using v1 since LangChain internally uses v1
 
 LLMType = Literal[
+    # OpenAI Models
     "gpt-4o",
     "gpt-4o-2024-08-06",
     "gpt-4o-mini",
     "gpt-4o-mini-2024-07-18",
+    # Anthropic Models
+    "claude-3-5-sonnet-latest",
+    # Google Models
+    "gemini-2.0-flash-exp"
 ]
 
 
 class PromptInput(BaseModel):
+    """Schema for prompt input configuration."""
+    class Config:
+        arbitrary_types_allowed = True
+
     name: str
     content: str
 
 
 class ToolConfig(BaseModel):
+    """Schema for tool configuration."""
+    class Config:
+        arbitrary_types_allowed = True
+
     description: str
     prompt_message: str
     image_description_prompt: Optional[str]
@@ -34,6 +47,8 @@ class ToolConfig(BaseModel):
 
 
 class SqlToolConfig(ToolConfig):
+    """Schema for SQL tool specific configuration."""
+
     nb_example_rows: int
     validate_empty_results: bool
     validate_with_llm: bool
@@ -41,6 +56,8 @@ class SqlToolConfig(ToolConfig):
 
 
 class ToolsLibrary(BaseModel):
+    """Schema for tool library configuration."""
+
     library: dict[
         str,
         ToolConfig,
@@ -48,6 +65,8 @@ class ToolsLibrary(BaseModel):
 
 
 class UserSettings(BaseModel):
+    """Schema for user settings configuration."""
+
     data: dict[
         str,
         Any,
@@ -56,19 +75,11 @@ class UserSettings(BaseModel):
 
 
 class ToolInputSchema(BaseModel):
-    chat_history: List[
-        Union[
-            HumanMessage,
-            AIMessage,
-        ]
-    ]
+    """Schema for tool input with support for LangChain message types."""
+    class Config:
+        arbitrary_types_allowed = True
+
+    chat_history: List[Union[HumanMessage, AIMessage]]
     latest_human_message: str
-
-    # Practice configurations
-    user_settings: Optional[UserSettings]
-
-    # Tool outputs (intermediate results)
-    intermediate_steps: dict[
-        str,
-        Any,
-    ]
+    user_settings: Optional[UserSettings] = None
+    intermediate_steps: dict[str, Any] = {}
