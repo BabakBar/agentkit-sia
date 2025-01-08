@@ -303,3 +303,159 @@ POST /api/v1/chat/feedback
    - Regular dependency updates
    - Security patches
    - Feature additions
+
+.
+├── .env.example
+├── .env
+├── .pre-commit-config.yaml
+├── Makefile
+├── docker-compose.yml
+├── docker-compose-dev.yml
+├── docker-compose-demo.yml
+│
+├── backend/
+│   ├── Dockerfile
+│   └── app/
+│       ├── .env.test
+│       ├── .pylintrc
+│       ├── pyproject.toml
+│       ├── setup.cfg
+│       │
+│       ├── alembic/
+│       │   ├── env.py
+│       │   ├── README
+│       │   ├── script.py.mako
+│       │   └── versions/
+│       │
+│       └── app/
+│           ├── **init**.py
+│           │
+│           ├── api/
+│           │   ├── **init**.py
+│           │   ├── deps.py
+│           │   └── v1/
+│           │       ├── **init**.py
+│           │       ├── api.py
+│           │       └── endpoints/
+│           │           ├── chat.py
+│           │           ├── sql.py
+│           │           └── statistics.py
+│           │
+│           ├── core/
+│           │   ├── **init**.py
+│           │   ├── config.py
+│           │   ├── security.py
+│           │   └── fastapi.py
+│           │
+│           ├── db/
+│           │   ├── **init**.py
+│           │   ├── session.py
+│           │   ├── base.py
+│           │   ├── base_class.py
+│           │   ├── bigquery_database.py
+│           │   └── SQLDatabaseExtended.py
+│           │
+│           ├── models/
+│           │   ├── **init**.py
+│           │   ├── auth_model.py
+│           │   ├── base_uuid_model.py
+│           │   ├── chat_model.py
+│           │   └── user_model.py
+│           │
+│           ├── schemas/
+│           │   ├── **init**.py
+│           │   ├── agent_schema.py
+│           │   ├── auth_schema.py
+│           │   ├── chat_schema.py
+│           │   ├── ingestion_schema.py
+│           │   ├── message_schema.py
+│           │   ├── streaming_schema.py
+│           │   └── tool_schemas/
+│           │       ├── **init**.py
+│           │       ├── sql_tool_schema.py
+│           │       └── ga4_tool_schema.py
+│           │
+│           ├── services/
+│           │   ├── **init**.py
+│           │   ├── auth/
+│           │   │   ├── **init**.py
+│           │   │   └── jwt.py
+│           │   └── chat_agent/
+│           │       ├── **init**.py
+│           │       ├── agent.py
+│           │       ├── helpers/
+│           │       │   ├── llm.py
+│           │       │   └── query_formatting.py
+│           │       └── tools/
+│           │           ├── ExtendedBaseTool.py
+│           │           └── library/
+│           │               ├── sql_tool/
+│           │               │   └── sql_tool.py
+│           │               └── ga4_tool/
+│           │                   └── ga4_tool.py
+│           │
+│           ├── utils/
+│           │   ├── **init**.py
+│           │   ├── config.py
+│           │   ├── uuid6.py
+│           │   ├── uuid_.py
+│           │   ├── sql.py
+│           │   └── streaming/
+│           │       ├── **init**.py
+│           │       └── stream.py
+│           │
+│           └── main.py
+│
+├── frontend/
+│   ├── Dockerfile
+│   ├── .dockerignore
+│   ├── .env.example
+│   ├── .env
+│   ├── .eslintignore
+│   ├── .eslintrc.js
+│   ├── .gitignore
+│   ├── package.json
+│   ├── pnpm-lock.yaml
+│   ├── next.config.js
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   │
+│   ├── .husky/
+│   │   ├── commit-msg
+│   │   ├── pre-commit
+│   │   └── pre-push
+│   │
+│   └── src/
+│       ├── components/
+│       │   ├── Chat/
+│       │   │   ├── ChatInput.tsx
+│       │   │   └── ChatMessage.tsx
+│       │   └── CustomIcons/
+│       │       ├── Icon.tsx
+│       │       └── ThreeDotsLoader.tsx
+│       │
+│       ├── hooks/
+│       │   └── useChat.ts
+│       │
+│       ├── pages/
+│       │   ├──_app.tsx
+│       │   ├── api/
+│       │   │   └── auth/
+│       │   │       └── [...nextauth].ts
+│       │   └── index.tsx
+│       │
+│       ├── styles/
+│       │   └── globals.css
+│       │
+│       └── utils/
+│           └── tree.tsx
+│
+├── caddy/
+│   └── Caddyfile
+│
+├── scripts/
+│   ├── 1-create-dbs.sql
+│   └── sql_db_tool/
+│       └── 2-chinook_psql_load.sql
+│
+└── README.md
