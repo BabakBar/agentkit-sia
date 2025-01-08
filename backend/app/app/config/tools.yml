@@ -395,3 +395,118 @@ library:
       {action_plans}
 
       Only reply with the number of the action plan you want to follow and nothing else. For example: "0" or "1" or "2" or "3" or "4"
+
+  bigquery_tool:
+    description: >-
+      GA4 analytics tool to query Google Analytics 4 data from BigQuery. Enables natural language querying of GA4 data with support for metrics, dimensions, and analytics insights.
+      Input is a question about GA4 data in natural language, output is a string that contains a BigQuery SQL query in markdown format, analytics insights, and optional visualizations.
+      {examples}
+    prompt_message: |-
+      Given the GA4 schema and metrics:
+      ---
+      {{ga4_schema}}
+      ---
+      Please answer the following analytics question:
+      {{question}}
+    system_context: |-
+      You are an expert in Google Analytics 4 and BigQuery.
+
+      During answering, the following principles MUST be followed:
+      1. Set the language to the markdown code block for each code block. For example, \```sql SELECT * FROM `project.dataset.events_*` ``` is SQL.
+      2. Use BigQuery SQL dialect and GA4 schema patterns
+      3. DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.)
+      4. Always include proper date range filters using _TABLE_SUFFIX
+      5. Handle nested fields properly using UNNEST for event_params and user_properties
+      6. Make sure the final SQL query starts with '```sql' and ends with '```'
+      7. Include proper cost controls and query optimization
+      8. Format analytics insights in clear markdown with metrics, trends, and insights
+    prompt_inputs:
+      - name: examples
+        content: |-
+          Example Input: "How many users visited the site last week?"
+          Example Output: "\```sql
+          SELECT
+            COUNT(DISTINCT user_pseudo_id) as users,
+            COUNT(DISTINCT CONCAT(user_pseudo_id, CAST(ga_session_id as STRING))) as sessions
+          FROM `project.dataset.events_*`
+          WHERE _TABLE_SUFFIX BETWEEN '20240101' AND '20240107'
+          \```
+          Total unique users: 1,234
+          Total sessions: 5,678
+          Key insights:
+          - 45% increase in users compared to previous week
+          - Average 2.3 sessions per user
+          - Peak traffic on Wednesday with 890 users"
+      - name: ga4_schema
+        content: |-
+          Tables:
+          events_* - GA4 event data with nested fields
+          
+          Key fields:
+          - event_date: Date of the event (YYYYMMDD)
+          - event_timestamp: Timestamp in microseconds
+          - event_name: Name of the event
+          - user_pseudo_id: Anonymous user identifier
+          - event_params: Nested field containing event parameters
+          - user_properties: Nested field containing user properties
+          
+          Common metrics:
+          - Users: COUNT(DISTINCT user_pseudo_id)
+          - Sessions: COUNT(DISTINCT CONCAT(user_pseudo_id, CAST(ga_session_id as STRING)))
+          - Pageviews: COUNT(CASE WHEN event_name = 'page_view' THEN 1 END)
+          
+          Common dimensions:
+          - page_location
+          - page_title
+          - source
+          - medium
+          - campaign
+    prompt_selection: |-
+      Given the GA4 schema:
+      ---
+      {ga4_schema}
+      ---
+      Please reply only with a comma separated list of required fields.
+      Select the fields that are most useful for answering the analytics question:
+      {{question}}
+    system_context_selection: |-
+      You are an expert in Google Analytics 4 data analysis.
+      You define which fields are needed to answer the analytics question.
+      Please follow these guidelines:
+      1. Only reply with a comma separated list of field names
+      2. Include all necessary fields for the analysis
+      3. Consider both standard and custom dimensions/metrics
+      4. Include fields needed for time-based analysis
+    prompt_validation: |-
+      Given the following BigQuery SQL query:
+      {{query}}
+      and the sample results:
+      {{result}}
+      Does the query effectively answer this analytics question:
+      {{question}}
+
+      Reply in this format:
+      Valid: [yes/no]
+      Reason: [explanation]
+      Optimization suggestions: [if any]
+    system_context_validation: |-
+      You are an expert in GA4 data analysis and BigQuery optimization.
+      Validate that the query:
+      1. Uses correct GA4 schema patterns
+      2. Includes proper date ranges
+      3. Handles nested fields correctly
+      4. Optimizes for cost and performance
+      5. Provides relevant analytics insights
+    prompt_refinement: |-
+      Given the GA4 schema:
+      ---
+      {{ga4_schema}}
+      ---
+      Please improve this BigQuery query based on the feedback:
+      Question: {{question}}
+      Previous query: {{previous_query}}
+      Feedback: {{feedback}}
+    nb_example_rows: 3
+    validate_empty_results: True
+    validate_with_llm: True
+    always_limit_query: False

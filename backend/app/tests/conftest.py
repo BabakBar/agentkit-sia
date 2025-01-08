@@ -58,7 +58,7 @@ def pytest_configure():
         "SQL_TOOL_DB_ENABLED": "false",
         "SQL_TOOL_DB_INFO_PATH": "test",
         "SQL_TOOL_DB_URI": "",
-        "PDF_TOOL_ENABLED": "true",
+        "PDF_TOOL_ENABLED": "false",
         "PDF_TOOL_DATA_PATH": "test",
         "PDF_TOOL_DATABASE": "test"
     })
