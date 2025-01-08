@@ -25,9 +25,17 @@ class Settings(BaseModel):
     API_V1_STR: str = f"/api/{API_VERSION}"
     PROJECT_NAME: str = "test"
     ENABLE_LLM_CACHE: bool = False
+    # OpenAI Configuration
     OPENAI_API_KEY: str = "test-key"
     OPENAI_ORGANIZATION: Optional[str] = None
     OPENAI_API_BASE: Optional[str] = None
+
+    # Anthropic Configuration
+    ANTHROPIC_API_KEY: str = "test-key"
+    ANTHROPIC_BASE_URL: str = "https://api.anthropic.com"
+
+    # Google AI Configuration
+    GOOGLE_API_KEY: str = "test-key"
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "postgres"
     DATABASE_HOST: str = "database"
