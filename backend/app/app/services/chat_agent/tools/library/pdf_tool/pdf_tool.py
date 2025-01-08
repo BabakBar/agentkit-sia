@@ -26,8 +26,8 @@ logger = logging.getLogger(__name__)
 class PDFTool(ExtendedBaseTool):
     """PDF Tool."""
 
-    name = "pdf_tool"
-    appendix_title = "PDF Appendix"
+    name: str = "pdf_tool"
+    appendix_title: str = "PDF Appendix"
     pdf_pipeline: PDFExtractionPipeline
 
     @classmethod

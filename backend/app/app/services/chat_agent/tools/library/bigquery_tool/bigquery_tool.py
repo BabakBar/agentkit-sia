@@ -24,8 +24,8 @@ from pydantic.v1 import Extra
 class BigQueryTool(ExtendedBaseTool):
     """GA4 Analytics Tool using BigQuery."""
 
-    name = "bigquery_tool"
-    appendix_title = "Analytics Appendix"
+    name: str = "bigquery_tool"
+    appendix_title: str = "Analytics Appendix"
 
     class Config:
         """Pydantic config."""

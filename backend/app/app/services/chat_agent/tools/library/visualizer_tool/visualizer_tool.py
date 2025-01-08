@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 class JsxVisualizerTool(ExtendedBaseTool):
     """Jsx Visualizer Tool."""
 
-    name = "visualizer_tool"
-    appendix_title = "Visualisation Appendix"
+    name: str = "visualizer_tool"
+    appendix_title: str = "Visualisation Appendix"
 
     @classmethod
     def from_config(

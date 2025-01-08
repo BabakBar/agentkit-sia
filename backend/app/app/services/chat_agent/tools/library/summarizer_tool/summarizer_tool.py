@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class SummarizerTool(ExtendedBaseTool):
     """Summarizer Tool."""
 
-    name = "summarizer_tool"
+    name: str = "summarizer_tool"
 
     summarize_prompt_template: PromptTemplate
 

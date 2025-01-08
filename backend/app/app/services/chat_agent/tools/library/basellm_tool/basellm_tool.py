@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class BaseLLM(ExtendedBaseTool):
     """BaseLLM Tool."""
 
-    name = "basellm_tool"
+    name: str = "basellm_tool"
 
     @classmethod
     def from_config(

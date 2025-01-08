@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 class ImageGenerationTool(ExtendedBaseTool):
     """Image Generation Tool."""
 
-    name = "image_generation_tool"
-    appendix_title = "Image Appendix"
+    name: str = "image_generation_tool"
+    appendix_title: str = "Image Appendix"
 
     @classmethod
     def from_config(

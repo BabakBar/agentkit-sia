@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 class SQLTool(ExtendedBaseTool):
     """SQL Tool."""
 
-    name = "sql_tool"
-    appendix_title = "Table Appendix"
+    name: str = "sql_tool"
+    appendix_title: str = "Table Appendix"
 
     nb_example_rows: int = 3
     validate_empty_results: bool = False
